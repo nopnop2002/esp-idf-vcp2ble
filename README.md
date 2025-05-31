@@ -21,12 +21,6 @@ This project only works with ESP32S3.
 The ESP32S3 has both USB and BLE capabilities.   
 The ESP32S2 also has USB capabilities, but does not have BLE capabilities.   
 
-Requires an Android or iOS device.   
-- Android Application   
-	I used [this](https://play.google.com/store/apps/details?id=de.kai_morich.serial_bluetooth_terminal) app.   
-- iOS Application   
-	[This](https://apps.apple.com/jp/app/bluetooth-v2-1-spp-setup/id6449416841) might work, but I don't have iOS so I don't know.   
-
 # Installation
 ```
 git clone https://github.com/nopnop2002/esp-idf-vcp2ble
@@ -88,6 +82,12 @@ GND       -------------> | || GND
 
 ![Image](https://github.com/user-attachments/assets/7bf405af-b1ec-4c7c-87d1-8bbe176e807b)
 
+
+# Android Application   
+I used [this](https://play.google.com/store/apps/details?id=de.kai_morich.serial_bluetooth_terminal) app.   
+
+# iOS Application   
+[This](https://apps.apple.com/jp/app/bluetooth-v2-1-spp-setup/id6449416841) might work, but I don't have iOS so I don't know.   
 
 
 # How to use
