@@ -2,7 +2,7 @@
 VCP(Virtual COM Port) to Bluetooth bridge for ESP-IDF.
 
 ESP-IDF supports VCP hosts.   
-Arduino Uno and Arduino Mega work as VCP devices.   
+Representative VCP devices include Arduino Uno and Arduino Mega.   
 ESP-IDF can communicate with VCP devices using the USB port.   
 I based it on [this](https://github.com/espressif/esp-idf/tree/master/examples/peripherals/usb/host/cdc/cdc_acm_vcp).   
 
