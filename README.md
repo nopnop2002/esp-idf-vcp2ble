@@ -45,6 +45,10 @@ idf.py flash
 ![Image](https://github.com/user-attachments/assets/e5286aeb-81ed-4289-8d1b-497f16f3ad88)
 ![Image](https://github.com/user-attachments/assets/62f95676-20f2-48d4-a8f2-a60688fa99c8)
 
+VCP communication stop bits. 0: 1 stopbit, 1: 1.5 stopbits, 2: 2 stopbits   
+VCP communication parity. 0: None, 1: Odd, 2: Even, 3: Mark, 4: Space   
+
+
 # Write this sketch on Arduino Uno.   
 You can use any AtMega microcontroller that has a USB port.   
 
