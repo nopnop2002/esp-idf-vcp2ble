@@ -98,7 +98,7 @@ I used [this](https://play.google.com/store/apps/details?id=de.kai_morich.serial
 	![Image](https://github.com/user-attachments/assets/9b0f23bc-86f4-4631-81e6-1df8d876f41b)
 
 - Connect to device   
-	You can communicate to UNO using android.   
+	You can communicate with UNO via BLE.   
 	![Image](https://github.com/user-attachments/assets/e84fa3b1-a0ee-4af3-a64c-695a5b383857)
 
 - Concurrent connection   
