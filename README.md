@@ -102,7 +102,7 @@ I used [this](https://play.google.com/store/apps/details?id=de.kai_morich.serial
 	You can communicate to UNO using android.   
 	![Image](https://github.com/user-attachments/assets/e84fa3b1-a0ee-4af3-a64c-695a5b383857)
 
-- Concurrent connection
+- Concurrent connection   
 	Unlike ESP-Bluedroid host stack, ESP-NimBLE host stack allows concurrent connections.   
 	The maximum number of simultaneous connections is specified here.   
 	![Image](https://github.com/user-attachments/assets/9d1e1182-ed41-4b9e-bc55-bb3c75dd4745)   
