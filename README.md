@@ -8,10 +8,10 @@ Representative VCP devices include Arduino Uno and Arduino Mega.
 ESP-IDF can communicate with VCP devices using the USB port.   
 I based it on [this](https://github.com/espressif/esp-idf/tree/master/examples/peripherals/usb/host/cdc/cdc_acm_vcp).   
 
-This project supports the following USB-UART converter chips:   
-- CH340 and CH341   
-- Silicon Labs CP210x   
-- FTDI FT231 and FT232   
+This project uses the following components:   
+- https://components.espressif.com/components/espressif/usb_host_ch34x_vcp   
+- https://components.espressif.com/components/espressif/usb_host_cp210x_vcp   
+- https://components.espressif.com/components/espressif/usb_host_ftdi_vcp   
 
 
 # BLE host stack
