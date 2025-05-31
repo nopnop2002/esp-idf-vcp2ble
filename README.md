@@ -79,7 +79,7 @@ GND       -------------> | || GND
                          +--+
 ```
 
-![USBConnector-2](https://github.com/user-attachments/assets/b5ae9a94-175c-46c7-a9a8-6be527cdd56e)
+![Image](https://github.com/user-attachments/assets/7bf405af-b1ec-4c7c-87d1-8bbe176e807b)
 
 
 # How to use
