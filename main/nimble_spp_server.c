@@ -24,7 +24,7 @@
 #include "services/gap/ble_svc_gap.h"
 #include "services/gatt/ble_svc_gatt.h"
 
-#include "spp.h"
+#include "cmd.h"
 
 static int ble_spp_server_gap_event(struct ble_gap_event *event, void *arg);
 static uint8_t own_addr_type;
@@ -432,20 +432,17 @@ void nimble_spp_task(void * pvParameters)
 	CMD_t cmdBuf;
 	while(1){
 		xQueueReceive(xQueueRx, &cmdBuf, portMAX_DELAY);
-		ESP_LOGI(pcTaskGetName(NULL), "cmdBuf.spp_event_id=%d", cmdBuf.spp_event_id);
-		if (cmdBuf.spp_event_id == BLE_UART_EVT) {
-
-			for (int i = 0; i <= CONFIG_BT_NIMBLE_MAX_CONNECTIONS; i++) {
-				/* Check if client has subscribed to notifications */
-				if (conn_handle_subs[i]) {
-					struct os_mbuf *txom;
-					txom = ble_hs_mbuf_from_flat(cmdBuf.payload, cmdBuf.length);
-					int rc = ble_gatts_notify_custom(i, ble_spp_svc_gatt_read_val_handle, txom);
-					if (rc == 0) {
-						ESP_LOGD(pcTaskGetName(NULL), "Notification sent successfully");
-					} else {
-						ESP_LOGI(pcTaskGetName(NULL), "Error in sending notification rc = %d", rc);
-					}
+		ESP_LOGI(pcTaskGetName(NULL), "cmdBuf.length=%d", cmdBuf.length);
+		for (int i = 0; i <= CONFIG_BT_NIMBLE_MAX_CONNECTIONS; i++) {
+			/* Check if client has subscribed to notifications */
+			if (conn_handle_subs[i]) {
+				struct os_mbuf *txom;
+				txom = ble_hs_mbuf_from_flat(cmdBuf.payload, cmdBuf.length);
+				int rc = ble_gatts_notify_custom(i, ble_spp_svc_gatt_read_val_handle, txom);
+				if (rc == 0) {
+					ESP_LOGD(pcTaskGetName(NULL), "Notification sent successfully");
+				} else {
+					ESP_LOGI(pcTaskGetName(NULL), "Error in sending notification rc = %d", rc);
 				}
 			}
 		}

@@ -16,7 +16,7 @@
 #include "nvs_flash.h"
 #include "esp_log.h"
 
-#include "spp.h"
+#include "cmd.h"
 
 static const char *TAG = "MAIN";
 

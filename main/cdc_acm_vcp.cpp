@@ -23,7 +23,7 @@
 #include "usb/vcp.hpp"
 #include "usb/usb_host.h"
 
-#include "spp.h"
+#include "cmd.h"
 
 extern QueueHandle_t xQueueRx;
 extern QueueHandle_t xQueueTx;
@@ -64,7 +64,6 @@ static bool handle_rx(const uint8_t *data, size_t data_len, void *arg)
 
 	// Send to ble task
 	CMD_t cmdBuf;
-	cmdBuf.spp_event_id = BLE_UART_EVT;
 	cmdBuf.length = data_len;
 	strncpy((char *)cmdBuf.payload, (char *)data, data_len);
 	BaseType_t err = xQueueSendFromISR(xQueueRx, &cmdBuf, NULL);
