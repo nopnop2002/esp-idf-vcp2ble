@@ -45,8 +45,6 @@ static const char *TAG = "SPP";
 extern QueueHandle_t xQueueTx;
 extern QueueHandle_t xQueueRx;
 
-#define RX_BUF_SIZE 128
-
 void ble_store_config_init(void);
 
 /**
@@ -269,7 +267,7 @@ void ble_spp_server_host_task(void *param)
 }
 
 /* Callback function for custom service */
-static int	ble_svc_gatt_handler(uint16_t conn_handle, uint16_t attr_handle, struct ble_gatt_access_ctxt *ctxt, void *arg)
+static int ble_svc_gatt_handler(uint16_t conn_handle, uint16_t attr_handle, struct ble_gatt_access_ctxt *ctxt, void *arg)
 {
 	switch (ctxt->op) {
 	case BLE_GATT_ACCESS_OP_READ_CHR:
