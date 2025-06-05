@@ -91,6 +91,7 @@ I (2342) VCP: 0x3fcba0b8   0d 0a
 
 The string output to VCP must be terminated with LF(0x0a).  
 If the string output to the VCP is not terminated with LF(0x0a), the Arduino will complete the input with a timeout.   
+The default input timeout is 1000 milliseconds.   
 The string output to the VCP is echoed back.   
 ```
 I (76092) VCP: 0x3fcb7930   61 62 63 64 65 66 67 0a                           |abcdefg.|
