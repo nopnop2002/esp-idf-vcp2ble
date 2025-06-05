@@ -14,6 +14,7 @@
 #include "esp_log.h"
 #include "freertos/FreeRTOS.h"
 #include "freertos/task.h"
+#include "freertos/message_buffer.h"
 #include "freertos/semphr.h"
 
 #include "usb/cdc_acm_host.h"
@@ -23,10 +24,9 @@
 #include "usb/vcp.hpp"
 #include "usb/usb_host.h"
 
-#include "cmd.h"
-
-extern QueueHandle_t xQueueRx;
-extern QueueHandle_t xQueueTx;
+extern MessageBufferHandle_t xMessageBufferTx;
+extern MessageBufferHandle_t xMessageBufferRx;
+extern size_t xItemSize;
 
 using namespace esp_usb;
 
@@ -61,14 +61,14 @@ static EventGroupHandle_t device_connected_group;
 static bool handle_rx(const uint8_t *data, size_t data_len, void *arg)
 {
 	printf("%.*s", data_len, data);
+	ESP_LOG_BUFFER_HEXDUMP(TAG, data, data_len, ESP_LOG_INFO);
 
 	// Send to ble task
-	CMD_t cmdBuf;
-	cmdBuf.length = data_len;
-	strncpy((char *)cmdBuf.payload, (char *)data, data_len);
-	BaseType_t err = xQueueSendFromISR(xQueueRx, &cmdBuf, NULL);
-	if (err != pdTRUE) {
-		ESP_LOGE(__FUNCTION__, "xQueueSendFromISR Fail");
+	char buffer[xItemSize];
+	strncpy(buffer, (char *)data, data_len);
+	size_t sended = xMessageBufferSendFromISR(xMessageBufferRx, buffer, data_len, NULL);
+	if (sended != data_len) {
+		ESP_LOGE(__FUNCTION__, "xMessageBufferSendFromISR Fail");
 	}
 	return true;
 }
@@ -195,15 +195,14 @@ extern "C" void cdc_acm_vcp_task(void *pvParameters)
 		ESP_ERROR_CHECK(vcp->set_control_line_state(true, true));
 		ESP_LOGI(TAG, "Done. You can reconnect the VCP device to run again.");
 
-		CMD_t cmdBuf;
+		char buffer[xItemSize];
 		while(1) {
-			BaseType_t received = xQueueReceive(xQueueTx, &cmdBuf, 100);
-			ESP_LOGD(TAG, "xQueueReceive received=%d", received);
-			if (received == pdPASS) {
-				ESP_LOGI(TAG, "cmdBuf.length=%d", cmdBuf.length);
-				ESP_LOG_BUFFER_HEXDUMP(TAG, cmdBuf.payload, cmdBuf.length, ESP_LOG_INFO);
+			size_t received = xMessageBufferReceive(xMessageBufferTx, buffer, sizeof(buffer), 100);
+			ESP_LOGI(TAG, "xMessageBufferReceive received=%d", received);
+			if (received > 0) {
+				ESP_LOG_BUFFER_HEXDUMP(TAG, buffer, received, ESP_LOG_INFO);
 				ESP_LOGI(TAG, "Sending data through CdcAcmDevice");
-				ESP_ERROR_CHECK(vcp->tx_blocking(cmdBuf.payload, cmdBuf.length));
+				ESP_ERROR_CHECK(vcp->tx_blocking((uint8_t*)buffer, received));
 			}
 			EventBits_t connected = xEventGroupGetBits(device_connected_group);
 			ESP_LOGD(TAG, "connected=0x%lx", connected);

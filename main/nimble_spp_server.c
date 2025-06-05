@@ -12,7 +12,7 @@
 
 #include "freertos/FreeRTOS.h"
 #include "freertos/task.h"
-#include "freertos/queue.h"
+#include "freertos/message_buffer.h"
 #include "esp_log.h"
 
 /* BLE */
@@ -23,8 +23,6 @@
 #include "console/console.h"
 #include "services/gap/ble_svc_gap.h"
 #include "services/gatt/ble_svc_gatt.h"
-
-#include "cmd.h"
 
 static int ble_spp_server_gap_event(struct ble_gap_event *event, void *arg);
 static uint8_t own_addr_type;
@@ -40,10 +38,11 @@ static uint16_t ble_spp_svc_gatt_read_val_handle;
 // 16 Bit SPP Service Characteristic UUID
 #define BLE_SVC_SPP_CHR_UUID16 0xABF1
 
-static const char *TAG = "SPP";
+static const char *TAG = "NIMBLE";
 
-extern QueueHandle_t xQueueTx;
-extern QueueHandle_t xQueueRx;
+extern MessageBufferHandle_t xMessageBufferTx;
+extern MessageBufferHandle_t xMessageBufferRx;
+extern size_t xItemSize;
 
 void ble_store_config_init(void);
 
@@ -269,6 +268,7 @@ void ble_spp_server_host_task(void *param)
 /* Callback function for custom service */
 static int ble_svc_gatt_handler(uint16_t conn_handle, uint16_t attr_handle, struct ble_gatt_access_ctxt *ctxt, void *arg)
 {
+	char buffer[xItemSize];
 	switch (ctxt->op) {
 	case BLE_GATT_ACCESS_OP_READ_CHR:
 		ESP_LOGI(__FUNCTION__, "Callback for read");
@@ -276,21 +276,20 @@ static int ble_svc_gatt_handler(uint16_t conn_handle, uint16_t attr_handle, stru
 
 	case BLE_GATT_ACCESS_OP_WRITE_CHR:
 		ESP_LOGI(__FUNCTION__, "Data received in write event,conn_handle = %x,attr_handle = %x", conn_handle, attr_handle);
-		ESP_LOGI(__FUNCTION__, "Data received in write event,ctxt->om->om_data = [%s]",ctxt->om->om_data);
-		ESP_LOG_BUFFER_HEXDUMP(__FUNCTION__, ctxt->om->om_data, strlen((char *)ctxt->om->om_data), ESP_LOG_INFO);
+		ESP_LOGI(__FUNCTION__, "Data received in write event,ctxt->om->om_lene = %d", ctxt->om->om_len);
+		ESP_LOGD(__FUNCTION__, "Data received in write event,ctxt->om->om_data = [%.*s]",ctxt->om->om_len, ctxt->om->om_data);
+		ESP_LOG_BUFFER_HEXDUMP(__FUNCTION__, ctxt->om->om_data, ctxt->om->om_len, ESP_LOG_INFO);
 
-		CMD_t cmdBuf;
-		cmdBuf.length = 0;
-		for (int i=0;i<strlen((char *)ctxt->om->om_data);i++) {
-			if (ctxt->om->om_data[i] == 0x0d) break;
-			if (ctxt->om->om_data[i] == 0x0a) break;
-			cmdBuf.length++;
+		int buffer_length = 0;
+		for (int i=0;i<ctxt->om->om_len;i++) {
+			if (ctxt->om->om_data[i] == 0x0d) continue;
+			buffer[buffer_length] = ctxt->om->om_data[i];
+			buffer_length++;
 		}
 
-		strcpy((char *)cmdBuf.payload, (char *)ctxt->om->om_data);
-		BaseType_t err = xQueueSendFromISR(xQueueTx, &cmdBuf, NULL);
-		if (err != pdTRUE) {
-			ESP_LOGE(__FUNCTION__, "xQueueSendFromISR Fail");
+		size_t sended = xMessageBufferSendFromISR(xMessageBufferTx, buffer, buffer_length, NULL);
+		if (sended != buffer_length) {
+			ESP_LOGE(__FUNCTION__, "xMessageBufferSendFromISR Fail");
 		}
 		break;
 
@@ -429,15 +428,16 @@ void nimble_spp_task(void * pvParameters)
 
 	nimble_port_freertos_init(ble_spp_server_host_task);
 
-	CMD_t cmdBuf;
+	char buffer[xItemSize];
 	while(1){
-		if (xQueueReceive(xQueueRx, &cmdBuf, portMAX_DELAY) == pdPASS) {
-			ESP_LOGI(pcTaskGetName(NULL), "cmdBuf.length=%d", cmdBuf.length);
+		size_t received = xMessageBufferReceive(xMessageBufferRx, buffer, sizeof(buffer), portMAX_DELAY);
+		ESP_LOGI(pcTaskGetName(NULL), "xMessageBufferReceive received=%d", received);
+		if (received > 0) {
 			for (int i = 0; i <= CONFIG_BT_NIMBLE_MAX_CONNECTIONS; i++) {
 				/* Check if client has subscribed to notifications */
 				if (conn_handle_subs[i]) {
 					struct os_mbuf *txom;
-					txom = ble_hs_mbuf_from_flat(cmdBuf.payload, cmdBuf.length);
+					txom = ble_hs_mbuf_from_flat(buffer, received);
 					int rc = ble_gatts_notify_custom(i, ble_spp_svc_gatt_read_val_handle, txom);
 					if (rc == 0) {
 						ESP_LOGD(pcTaskGetName(NULL), "Notification sent successfully");
@@ -447,7 +447,7 @@ void nimble_spp_task(void * pvParameters)
 				}
 			}
 		} else {
-			ESP_LOGE(TAG, "xQueueReceive fail");
+			ESP_LOGE(pcTaskGetName(NULL), "xMessageBufferReceive fail");
 			break;
 		}
 	} // end while

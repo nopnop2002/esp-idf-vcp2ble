@@ -12,16 +12,19 @@
 
 #include "freertos/FreeRTOS.h"
 #include "freertos/task.h"
-#include "freertos/queue.h"
+#include "freertos/message_buffer.h"
 #include "nvs_flash.h"
 #include "esp_log.h"
 
-#include "cmd.h"
-
 static const char *TAG = "MAIN";
 
-QueueHandle_t xQueueTx;
-QueueHandle_t xQueueRx;
+MessageBufferHandle_t xMessageBufferTx;
+MessageBufferHandle_t xMessageBufferRx;
+
+// The total number of bytes (not messages) the message buffer will be able to hold at any one time.
+size_t xBufferSizeBytes = 1024;
+// The size, in bytes, required to hold each item in the message,
+size_t xItemSize = 256;
 
 void nimble_spp_task(void * pvParameters);
 void cdc_acm_vcp_task(void *pvParameters);
@@ -37,11 +40,11 @@ void app_main(void)
 	}
 	ESP_ERROR_CHECK( ret );
 
-	// Create Queue
-	xQueueTx = xQueueCreate(10, sizeof(CMD_t));
-	configASSERT( xQueueTx );
-	xQueueRx = xQueueCreate( 10, sizeof(CMD_t) );
-	configASSERT( xQueueRx );
+	// Create MessageBuffer
+	xMessageBufferTx = xMessageBufferCreate(xBufferSizeBytes);
+	configASSERT( xMessageBufferTx );
+	xMessageBufferRx = xMessageBufferCreate(xBufferSizeBytes);
+	configASSERT( xMessageBufferRx );
 
 	// Start tasks
 	xTaskCreate(nimble_spp_task, "NIMBLE_SPP", 1024*4, NULL, 2, NULL);
