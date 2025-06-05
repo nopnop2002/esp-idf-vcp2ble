@@ -85,15 +85,15 @@ void loop() {
 
 The string input from VCP is terminated with CR(0x0d)+LF(0x0a).   
 ```
-I (1189799) UART-RX: 0x3ffc8458   48 65 6c 6c 6f 20 57 6f  72 6c 64 20 31 30 30 31  |Hello World 1001|
-I (1189799) UART-RX: 0x3ffc8468   0d 0a
+I (2342) VCP: 0x3fcba0a8   48 65 6c 6c 6f 20 57 6f  72 6c 64 20 33 30 30 30  |Hello World 3000|
+I (2342) VCP: 0x3fcba0b8   0d 0a
 ```
 
 The string output to VCP must be terminated with LF(0x0a).  
 The string output to the VCP is echoed back.   
 ```
-I (1285439) UART-TX: 0x3ffc72f8   61 62 63 64 65 66 67 0a                           |abcdefg.|
-I (1285459) UART-RX: 0x3ffc8458   61 62 63 64 65 66 67 0d  0a                       |abcdefg..|
+I (76092) VCP: 0x3fcb7930   61 62 63 64 65 66 67 0a                           |abcdefg.|
+I (76112) VCP: 0x3fcba0a8   61 62 63 64 65 66 67 0d  0a                       |abcdefg..|
 ```
 
 # Wireing   
