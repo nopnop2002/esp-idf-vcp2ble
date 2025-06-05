@@ -85,8 +85,9 @@ void loop() {
 
 The string input from VCP is terminated with CR(0x0d)+LF(0x0a).   
 ```
-I (2342) VCP: 0x3fcba0a8   48 65 6c 6c 6f 20 57 6f  72 6c 64 20 33 30 30 30  |Hello World 3000|
-I (2342) VCP: 0x3fcba0b8   0d 0a
+I (1482) VCP: Receiving data through CdcAcmDevice
+I (1482) VCP: 0x3fcba0a8   48 65 6c 6c 6f 20 57 6f  72 6c 64 20 36 36 30 30  |Hello World 6600|
+I (1492) VCP: 0x3fcba0b8   30 0d 0a                                          |0..|
 ```
 
 The string output to VCP must be terminated with LF(0x0a).  
@@ -94,8 +95,10 @@ If the string output to the VCP is not terminated with LF(0x0a), the Arduino wil
 The default input timeout is 1000 milliseconds.   
 The string output to the VCP is echoed back with CR+LF as the terminator.   
 ```
-I (76092) VCP: 0x3fcb7930   61 62 63 64 65 66 67 0a                           |abcdefg.|
-I (76112) VCP: 0x3fcba0a8   61 62 63 64 65 66 67 0d  0a                       |abcdefg..|
+I (78212) VCP: Sending data through CdcAcmDevice
+I (78222) VCP: 0x3fcb7930   61 62 63 64 65 66 67 0a                           |abcdefg.|
+I (78232) VCP: Receiving data through CdcAcmDevice
+I (78232) VCP: 0x3fcba0a8   61 62 63 64 65 66 67 0d  0a                       |abcdefg..|
 ```
 
 # Wireing   

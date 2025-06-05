@@ -60,7 +60,8 @@ static EventGroupHandle_t device_connected_group;
  */
 static bool handle_rx(const uint8_t *data, size_t data_len, void *arg)
 {
-	printf("%.*s", data_len, data);
+	//printf("%.*s", data_len, data);
+	ESP_LOGI(TAG, "Receiving data through CdcAcmDevice");
 	ESP_LOG_BUFFER_HEXDUMP(TAG, data, data_len, ESP_LOG_INFO);
 
 	// Send to ble task
@@ -200,8 +201,8 @@ extern "C" void cdc_acm_vcp_task(void *pvParameters)
 			size_t received = xMessageBufferReceive(xMessageBufferTx, buffer, sizeof(buffer), 100);
 			ESP_LOGI(TAG, "xMessageBufferReceive received=%d", received);
 			if (received > 0) {
-				ESP_LOG_BUFFER_HEXDUMP(TAG, buffer, received, ESP_LOG_INFO);
 				ESP_LOGI(TAG, "Sending data through CdcAcmDevice");
+				ESP_LOG_BUFFER_HEXDUMP(TAG, buffer, received, ESP_LOG_INFO);
 				ESP_ERROR_CHECK(vcp->tx_blocking((uint8_t*)buffer, received));
 			}
 			EventBits_t connected = xEventGroupGetBits(device_connected_group);

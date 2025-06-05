@@ -280,6 +280,9 @@ static int ble_svc_gatt_handler(uint16_t conn_handle, uint16_t attr_handle, stru
 		ESP_LOGD(__FUNCTION__, "Data received in write event,ctxt->om->om_data = [%.*s]",ctxt->om->om_len, ctxt->om->om_data);
 		ESP_LOG_BUFFER_HEXDUMP(__FUNCTION__, ctxt->om->om_data, ctxt->om->om_len, ESP_LOG_INFO);
 
+		/*
+		[61 62 63 64 65 66 67 0d 0a] to [61 62 63 64 65 66 67 0a]
+		*/
 		int buffer_length = 0;
 		for (int i=0;i<ctxt->om->om_len;i++) {
 			if (ctxt->om->om_data[i] == 0x0d) continue;
