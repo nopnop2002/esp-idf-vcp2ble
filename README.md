@@ -83,14 +83,14 @@ void loop() {
 }
 ```
 
-The string input from UART is terminated with CR(0x0d)+LF(0x0a).   
+The string input from VCP is terminated with CR(0x0d)+LF(0x0a).   
 ```
 I (1189799) UART-RX: 0x3ffc8458   48 65 6c 6c 6f 20 57 6f  72 6c 64 20 31 30 30 31  |Hello World 1001|
 I (1189799) UART-RX: 0x3ffc8468   0d 0a
 ```
 
-The string output to UART must be terminated with LF(0x0a).  
-The string output to the UART is echoed back.   
+The string output to VCP must be terminated with LF(0x0a).  
+The string output to the VCP is echoed back.   
 ```
 I (1285439) UART-TX: 0x3ffc72f8   61 62 63 64 65 66 67 0a                           |abcdefg.|
 I (1285459) UART-RX: 0x3ffc8458   61 62 63 64 65 66 67 0d  0a                       |abcdefg..|
