@@ -83,17 +83,20 @@ void loop() {
 }
 ```
 
-The string input from VCP is terminated with CR(0x0d)+LF(0x0a).   
+Strings from Arduino to ESP32 are terminated with CR(0x0d)+LF(0x0a).   
 ```
 I (1482) VCP: Receiving data through CdcAcmDevice
 I (1482) VCP: 0x3fcba0a8   48 65 6c 6c 6f 20 57 6f  72 6c 64 20 36 36 30 30  |Hello World 6600|
 I (1492) VCP: 0x3fcba0b8   30 0d 0a                                          |0..|
 ```
 
-The string output to VCP must be terminated with LF(0x0a).  
-If the string output to the VCP is not terminated with LF(0x0a), the Arduino will complete the input with a timeout.   
-The default input timeout is 1000 milliseconds.   
-The string output to the VCP is echoed back with CR+LF as the terminator.   
+The Arduino sketch inputs data with LF as the terminator.   
+So strings from the ESP32 to the Arduino must be terminated with LF (0x0a).   
+If the string output from the ESP32 to the Arduino is not terminated with LF (0x0a), the Arduino sketch will complete the input with a timeout.   
+The default input timeout for Arduino sketches is 1000 milliseconds.   
+The ESP32 SPP driver always sends data to the application with CR+LF as the termination character.   
+This project changes the termination character from CR+LF to LF and sends the data to Arduino.   
+The Arduino sketch will echo back the string it reads.   
 ```
 I (78212) VCP: Sending data through CdcAcmDevice
 I (78222) VCP: 0x3fcb7930   61 62 63 64 65 66 67 0a                           |abcdefg.|
